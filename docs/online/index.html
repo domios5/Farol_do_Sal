@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Farol de Sal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Alegreya+Sans:wght@400;700&display=swap">
+<style>
+/* Layout: coluna única tipo telemóvel sobre uma carta náutica antiga; estado no topo, ecrã ativo ao meio, separadores em baixo. Um só mundo visual: pergaminho e tinta. */
+:root{
+  color-scheme:light;
+  --perg:#e6d5ac; --perg2:#dcc894; --perg3:#cdb67d; --mesa:#3b2c1c;
+  --tinta:#2e2012; --sepia:#6b5230; --mar:#3f6f73; --lacre:#9c2f22; --lacre2:#6d1d14; --ouro:#a8791c; --musgo:#4f6b34;
+  --r0:#5c4a30; --r1:#3f6a2c; --r2:#2a5d85; --r3:#7a2f86; --r4:#9a5b08; --r5:#a3262e; --r6:#0d6a6a;
+  --f-tit:'IM Fell English SC','Palatino Linotype',Georgia,serif;
+  --f-it:'IM Fell English',Georgia,serif;
+  --f-txt:'Alegreya Sans','Trebuchet MS',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0}[hidden]{display:none!important}
+.ocupado main button{pointer-events:none;opacity:.6}
+html,body{height:100%}
+body{background:var(--mesa);color:var(--tinta);font:16px/1.4 var(--f-txt);display:flex;justify-content:center}
+#app{width:100%;max-width:520px;height:100%;display:flex;flex-direction:column;position:relative;
+  background:radial-gradient(ellipse at 50% 30%,var(--perg) 40%,var(--perg2) 85%,var(--perg3) 100%);border-inline:1px solid var(--tinta)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--lacre);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.arte{fill:none;stroke:var(--tinta);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.arte .agua{stroke:var(--mar)}
+
+header{padding:10px 16px 12px;border-bottom:3px double var(--tinta);display:flex;flex-direction:column;gap:8px}
+.topo{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.marca{display:flex;align-items:center;gap:6px}
+.topo h1{font:400 26px/1 var(--f-tit);margin:0;letter-spacing:.03em}
+.moedas{display:flex;gap:12px;font-size:14px;color:var(--sepia)}
+.moedas b{color:var(--tinta)}
+.barras{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.barra{min-width:0}
+.barra small{display:flex;justify-content:space-between;font-size:12px;color:var(--sepia);gap:4px;white-space:nowrap}
+.barra small span:first-child{font-family:var(--f-tit);letter-spacing:.05em}
+.trilho{height:9px;border:1px solid var(--tinta);margin-top:2px;background:repeating-linear-gradient(90deg,transparent 0 9px,var(--perg3) 9px 10px)}
+.trilho i{display:block;height:100%;width:0;transition:width .3s}
+.hp i{background:var(--lacre)} .en i{background:var(--ouro)} .xp i{background:var(--musgo)}
+
+main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:0}
+h2{font:400 22px/1.1 var(--f-tit);margin:0;letter-spacing:.03em;text-wrap:balance}
+h3.sub{font:400 17px var(--f-tit);margin:6px 0 0;letter-spacing:.03em;color:var(--sepia)}
+p{margin:0}
+.nota{color:var(--sepia);font-size:14px}
+.lenda{font:italic 15px/1.35 var(--f-it);color:var(--sepia)}
+.lista{display:flex;flex-direction:column;gap:10px}
+.cartao{border:3px double var(--tinta);padding:10px 12px;display:flex;gap:12px;align-items:center;background:color-mix(in srgb,var(--perg) 70%,transparent)}
+.cartao>div{min-width:0;display:flex;flex-direction:column;gap:2px;flex:1}
+.cartao h3{font:400 18px/1.2 var(--f-tit);margin:0;letter-spacing:.02em}
+.cartao.trancado{opacity:.5}
+.btn{background:var(--lacre);color:var(--perg);border:1px solid var(--lacre2);border-radius:999px;padding:8px 14px;font-weight:700;white-space:nowrap;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--perg) 25%,transparent),0 2px 0 var(--lacre2)}
+.btn:active{transform:translateY(1px);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--perg) 25%,transparent)}
+.btn[disabled]{background:transparent;color:var(--sepia);border:1px dashed var(--sepia);box-shadow:none;cursor:not-allowed}
+.btn.sec{background:transparent;color:var(--tinta);border:1px solid var(--tinta);box-shadow:none;font-weight:400}
+.btn.peq{padding:4px 10px;font-size:14px}
+.acoes{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex-direction:row!important;flex:none!important;max-width:55%}
+.solta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.attrs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.treino{grid-template-columns:1fr}.attr{flex-wrap:wrap}
+.forja{grid-column:1/-1;border:1px dashed var(--tinta);padding:8px 10px;display:flex;flex-direction:column;gap:6px}.forja .btn{white-space:normal;text-align:left;border-radius:14px}
+select{font:inherit;background:transparent;color:var(--tinta);border:1px solid var(--tinta);padding:4px 6px}
+.r4{color:var(--r4)}.r5{color:var(--r5)}.r6{color:var(--r6)}.btn{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+.equip{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}.attr b{font-weight:700}
+.attr{border:1px solid var(--tinta);padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.attr span small{display:block;color:var(--sepia);font-size:13px}
+.stats{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--sepia)}
+.stats b{color:var(--tinta)}
+.r0{color:var(--r0)}.r1{color:var(--r1)}.r2{color:var(--r2)}.r3{color:var(--r3)}
+.selo{font:400 12px var(--f-tit);letter-spacing:.06em;border:1px solid currentColor;padding:0 5px;border-radius:999px;color:var(--mar);vertical-align:middle}
+.selo.sim{color:var(--sepia)}
+input[type=text]{background:transparent;border:0;border-bottom:1px solid var(--tinta);color:var(--tinta);font:italic 17px var(--f-it);padding:4px 2px;width:100%;max-width:200px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{padding:6px 4px;text-align:left;border-bottom:1px dotted var(--sepia)}
+th{color:var(--sepia);font:400 13px var(--f-tit);letter-spacing:.06em}
+td:last-child,th:last-child{text-align:right}
+tr.eu td{color:var(--lacre);font-weight:700}
+
+nav{display:grid;grid-template-columns:repeat(6,1fr);border-top:3px double var(--tinta)}
+nav button{background:none;border:0;padding:12px 2px;font:400 14px var(--f-tit);letter-spacing:.03em;color:var(--sepia)}
+nav button[aria-current=true]{color:var(--lacre);text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+
+#luta{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,var(--perg) 40%,var(--perg2) 85%,var(--perg3) 100%);display:flex;flex-direction:column;padding:16px;gap:10px;z-index:5}
+.duelo{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end}
+.duelo div{min-width:0}
+.duelo strong{font:400 18px/1.2 var(--f-tit);display:block}
+.duelo .dir{text-align:right}
+#lArte{align-self:center}
+#reg{flex:1;overflow-y:auto;border:3px double var(--tinta);padding:10px;font-size:15px;display:flex;flex-direction:column;gap:4px;min-height:0}
+#reg .t{color:var(--musgo)} #reg .e{color:var(--lacre)} #reg .f{font:400 18px var(--f-tit);margin-top:6px}
+#reg .p{color:var(--r3);font-style:italic}
+@media (prefers-reduced-motion:reduce){.trilho i{transition:none}}
+</style>
+
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="topo">
+      <div class="marca"><svg class="arte" viewBox="0 0 64 48" width="44" aria-hidden="true"><path d="M26 44l3-26h6l3 26zM27 18h10v-6H27zM30 12l2-6 2 6M20 44h24M28 28h8M27 36h10M38 13l13-4M38 16l13 4M26 13L13 9M26 16l-13 4"/></svg><h1>Farol de Sal</h1></div>
+      <div class="moedas"><span>Sal <b class="num" id="hSal">0</b></span><span>Sucata <b class="num" id="hSuc">0</b></span><span>Nv <b class="num" id="hNv">1</b></span></div>
+    </div>
+    <div class="barras">
+      <div class="barra en"><small><span>Energia</span><span class="num" id="hEn"></span></small><div class="trilho"><i id="bEn"></i></div></div>
+      <div class="barra xp"><small><span>XP</span><span class="num" id="hXp"></span></small><div class="trilho"><i id="bXp"></i></div></div>
+    </div>
+  </header>
+  <main id="ecra"></main>
+  <nav id="nav">
+    <button data-tab="explorar">Carta</button>
+    <button data-tab="heroi">Herói</button>
+    <button data-tab="loja">Loja</button>
+    <button data-tab="farol">Farol</button>
+    <button data-tab="arena">Arena</button>
+    <button data-tab="opcoes">Opções</button>
+  </nav>
+  <section id="luta" hidden>
+    <div class="duelo">
+      <div><strong id="lN1"></strong><div class="barra hp"><div class="trilho"><i id="lB1"></i></div></div></div>
+      <span class="lenda">contra</span>
+      <div class="dir"><strong id="lN2"></strong><div class="barra hp"><div class="trilho"><i id="lB2"></i></div></div></div>
+    </div>
+    <div id="lArte"></div>
+    <div id="reg" aria-live="polite"></div>
+    <button class="btn" id="lFim">Saltar</button>
+  </section>
+</div>
+
+<script type="module" src="ui.js"></script>
+</body>
+</html>

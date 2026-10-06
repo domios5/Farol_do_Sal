@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Farol de Sal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Alegreya+Sans:wght@400;700&display=swap">
+<style>
+/* Layout: coluna única tipo telemóvel sobre uma carta náutica antiga; estado no topo, ecrã ativo ao meio, separadores em baixo. Um só mundo visual: pergaminho e tinta. */
+:root{
+  color-scheme:light;
+  --perg:#e6d5ac; --perg2:#dcc894; --perg3:#cdb67d; --mesa:#3b2c1c;
+  --tinta:#2e2012; --sepia:#6b5230; --mar:#3f6f73; --lacre:#9c2f22; --lacre2:#6d1d14; --ouro:#a8791c; --musgo:#4f6b34;
+  --r0:#5c4a30; --r1:#3f6a2c; --r2:#2a5d85; --r3:#7a2f86; --r4:#9a5b08; --r5:#a3262e; --r6:#0d6a6a;
+  --f-tit:'IM Fell English SC','Palatino Linotype',Georgia,serif;
+  --f-it:'IM Fell English',Georgia,serif;
+  --f-txt:'Alegreya Sans','Trebuchet MS',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0}[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--mesa);color:var(--tinta);font:16px/1.4 var(--f-txt);display:flex;justify-content:center}
+#app{width:100%;max-width:520px;height:100%;display:flex;flex-direction:column;position:relative;
+  background:radial-gradient(ellipse at 50% 30%,var(--perg) 40%,var(--perg2) 85%,var(--perg3) 100%);border-inline:1px solid var(--tinta)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--lacre);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.arte{fill:none;stroke:var(--tinta);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.arte .agua{stroke:var(--mar)}
+
+header{padding:10px 16px 12px;border-bottom:3px double var(--tinta);display:flex;flex-direction:column;gap:8px}
+.topo{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.marca{display:flex;align-items:center;gap:6px}
+.topo h1{font:400 26px/1 var(--f-tit);margin:0;letter-spacing:.03em}
+.moedas{display:flex;gap:12px;font-size:14px;color:var(--sepia)}
+.moedas b{color:var(--tinta)}
+.barras{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.barra{min-width:0}
+.barra small{display:flex;justify-content:space-between;font-size:12px;color:var(--sepia);gap:4px;white-space:nowrap}
+.barra small span:first-child{font-family:var(--f-tit);letter-spacing:.05em}
+.trilho{height:9px;border:1px solid var(--tinta);margin-top:2px;background:repeating-linear-gradient(90deg,transparent 0 9px,var(--perg3) 9px 10px)}
+.trilho i{display:block;height:100%;width:0;transition:width .3s}
+.hp i{background:var(--lacre)} .en i{background:var(--ouro)} .xp i{background:var(--musgo)}
+
+main{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:0}
+h2{font:400 22px/1.1 var(--f-tit);margin:0;letter-spacing:.03em;text-wrap:balance}
+h3.sub{font:400 17px var(--f-tit);margin:6px 0 0;letter-spacing:.03em;color:var(--sepia)}
+p{margin:0}
+.nota{color:var(--sepia);font-size:14px}
+.lenda{font:italic 15px/1.35 var(--f-it);color:var(--sepia)}
+.lista{display:flex;flex-direction:column;gap:10px}
+.cartao{border:3px double var(--tinta);padding:10px 12px;display:flex;gap:12px;align-items:center;background:color-mix(in srgb,var(--perg) 70%,transparent)}
+.cartao>div{min-width:0;display:flex;flex-direction:column;gap:2px;flex:1}
+.cartao h3{font:400 18px/1.2 var(--f-tit);margin:0;letter-spacing:.02em}
+.cartao.trancado{opacity:.5}
+.btn{background:var(--lacre);color:var(--perg);border:1px solid var(--lacre2);border-radius:999px;padding:8px 14px;font-weight:700;white-space:nowrap;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--perg) 25%,transparent),0 2px 0 var(--lacre2)}
+.btn:active{transform:translateY(1px);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--perg) 25%,transparent)}
+.btn[disabled]{background:transparent;color:var(--sepia);border:1px dashed var(--sepia);box-shadow:none;cursor:not-allowed}
+.btn.sec{background:transparent;color:var(--tinta);border:1px solid var(--tinta);box-shadow:none;font-weight:400}
+.btn.peq{padding:4px 10px;font-size:14px}
+.acoes{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex-direction:row!important;flex:none!important;max-width:55%}
+.solta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.attrs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.treino{grid-template-columns:1fr}.attr{flex-wrap:wrap}
+.forja{grid-column:1/-1;border:1px dashed var(--tinta);padding:8px 10px;display:flex;flex-direction:column;gap:6px}.forja .btn{white-space:normal;text-align:left;border-radius:14px}
+select{font:inherit;background:transparent;color:var(--tinta);border:1px solid var(--tinta);padding:4px 6px}
+.r4{color:var(--r4)}.r5{color:var(--r5)}.r6{color:var(--r6)}.btn{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+.equip{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}.attr b{font-weight:700}
+.attr{border:1px solid var(--tinta);padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.attr span small{display:block;color:var(--sepia);font-size:13px}
+.stats{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:var(--sepia)}
+.stats b{color:var(--tinta)}
+.r0{color:var(--r0)}.r1{color:var(--r1)}.r2{color:var(--r2)}.r3{color:var(--r3)}
+.selo{font:400 12px var(--f-tit);letter-spacing:.06em;border:1px solid currentColor;padding:0 5px;border-radius:999px;color:var(--mar);vertical-align:middle}
+.selo.sim{color:var(--sepia)}
+input[type=text]{background:transparent;border:0;border-bottom:1px solid var(--tinta);color:var(--tinta);font:italic 17px var(--f-it);padding:4px 2px;width:100%;max-width:200px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+td,th{padding:6px 4px;text-align:left;border-bottom:1px dotted var(--sepia)}
+th{color:var(--sepia);font:400 13px var(--f-tit);letter-spacing:.06em}
+td:last-child,th:last-child{text-align:right}
+tr.eu td{color:var(--lacre);font-weight:700}
+
+nav{display:grid;grid-template-columns:repeat(6,1fr);border-top:3px double var(--tinta)}
+nav button{background:none;border:0;padding:12px 2px;font:400 14px var(--f-tit);letter-spacing:.03em;color:var(--sepia)}
+nav button[aria-current=true]{color:var(--lacre);text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+
+#luta{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,var(--perg) 40%,var(--perg2) 85%,var(--perg3) 100%);display:flex;flex-direction:column;padding:16px;gap:10px;z-index:5}
+.duelo{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:end}
+.duelo div{min-width:0}
+.duelo strong{font:400 18px/1.2 var(--f-tit);display:block}
+.duelo .dir{text-align:right}
+#lArte{align-self:center}
+#reg{flex:1;overflow-y:auto;border:3px double var(--tinta);padding:10px;font-size:15px;display:flex;flex-direction:column;gap:4px;min-height:0}
+#reg .t{color:var(--musgo)} #reg .e{color:var(--lacre)} #reg .f{font:400 18px var(--f-tit);margin-top:6px}
+#reg .p{color:var(--r3);font-style:italic}
+@media (prefers-reduced-motion:reduce){.trilho i{transition:none}}
+</style>
+
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="topo">
+      <div class="marca"><svg class="arte" viewBox="0 0 64 48" width="44" aria-hidden="true"><path d="M26 44l3-26h6l3 26zM27 18h10v-6H27zM30 12l2-6 2 6M20 44h24M28 28h8M27 36h10M38 13l13-4M38 16l13 4M26 13L13 9M26 16l-13 4"/></svg><h1>Farol de Sal</h1></div>
+      <div class="moedas"><span>Sal <b class="num" id="hSal">0</b></span><span>Sucata <b class="num" id="hSuc">0</b></span><span>Nv <b class="num" id="hNv">1</b></span></div>
+    </div>
+    <div class="barras">
+      <div class="barra en"><small><span>Energia</span><span class="num" id="hEn"></span></small><div class="trilho"><i id="bEn"></i></div></div>
+      <div class="barra xp"><small><span>XP</span><span class="num" id="hXp"></span></small><div class="trilho"><i id="bXp"></i></div></div>
+    </div>
+  </header>
+  <main id="ecra"></main>
+  <nav id="nav">
+    <button data-tab="explorar">Carta</button>
+    <button data-tab="heroi">Herói</button>
+    <button data-tab="loja">Loja</button>
+    <button data-tab="farol">Farol</button>
+    <button data-tab="arena">Arena</button>
+    <button data-tab="opcoes">Opções</button>
+  </nav>
+  <section id="luta" hidden>
+    <div class="duelo">
+      <div><strong id="lN1"></strong><div class="barra hp"><div class="trilho"><i id="lB1"></i></div></div></div>
+      <span class="lenda">contra</span>
+      <div class="dir"><strong id="lN2"></strong><div class="barra hp"><div class="trilho"><i id="lB2"></i></div></div></div>
+    </div>
+    <div id="lArte"></div>
+    <div id="reg" aria-live="polite"></div>
+    <button class="btn" id="lFim">Saltar</button>
+  </section>
+</div>
+
+<script>
+const CHAVE='farol-de-sal-v1';
+const SUC_MS=300000, HP_MS=3000, SAL_MS=60000, BIL_MS=300000;
+const ONDA='<path class="agua" d="M2 45q5-4 10 0t10 0 10 0 10 0 10 0 10 0"/>';
+const ARTE={
+ cais:'<path d="M4 28h56M8 22h48v6H8zM12 28v14M26 28v14M40 28v14M54 28v14M46 22V10l8 4-8 4"/>'+ONDA,
+ salinas:'<path d="M6 38l10-16 10 16zM28 38l8-12 8 12zM46 38l6-9 6 9zM2 38h60M11 30l5 3M33 31l4 3M8 44h18M34 44h24"/>',
+ traineiras:'<path d="M6 28h52l-8 12H14zM30 28V8M30 10l16 14H30M30 12L18 24h12M14 33h36"/>'+ONDA,
+ conserveira:'<path d="M6 42V24l12 6v-6l12 6v-6l12 6V10h8v32zM14 42v-6h6v6M28 36h8M46 6q3-3 7-3M4 42h56"/>',
+ plataforma:'<path d="M10 22h44v6H10zM16 28l-4 14M48 28l4 14M24 28v14M40 28v14M30 22V6h4v16M34 8l14 8M14 22v-8h8v8M16 34h32"/>'+ONDA,
+ serpente:'<path d="M4 42q6-20 14 0M22 42q6-20 14 0M40 42q2-26 14-28 7 0 6 7-5 3-10 0M54 18v.5M50 21l-3 5"/>'+ONDA,
+ lanterna:'<path d="M24 16h16l4 22H20zM28 16v-6h8v6M26 38v4h12v-4M32 22v10M12 26h4M48 26h4"/>',
+ farol:'<path d="M26 44l3-26h6l3 26zM27 18h10v-6H27zM30 12l2-6 2 6M20 44h24M28 28h8M27 36h10M38 13l13-4M38 16l13 4M26 13L13 9M26 16l-13 4"/>',
+ destilaria:'<path d="M24 10h16M28 10v10L16 42h32L36 20V10M22 32h20M40 14h10v10M50 24l-3 6h6z"/>',
+ oficina:'<path d="M10 16h36q6 0 10 5H40q-2 9-6 9v6h8v6H18v-6h8v-6q-10 0-12-9z"/>',
+ sucateira:'<path d="M8 42h48M16 42V12h6v30M22 14h28M22 22l12-8M46 14v10M41 24h10l-2 9h-6z"/>',
+ arma:'<path d="M10 40L46 8M46 8l8-2-2 8zM40 8l10 10M14 44l-6-6"/>',
+ armadura:'<path d="M20 8l12 4 12-4 8 8-6 6v20H18V22l-6-6zM32 12v30"/>',
+ colar:'<path d="M20 6q12 14 24 0M32 16v6M24 30a8 8 0 1 0 16 0 8 8 0 1 0-16 0M32 26v8M28 30h8"/>',
+ capacete:'<path d="M14 34q0-22 18-22t18 22zM10 34h44v6H10zM32 12V7"/>',
+ luvas:'<path d="M22 44V26l-7-8 4-3 7 6V10h5v10V7h5v13V10h5v12l4-4 4 3-8 12v11zM22 38h18"/>',
+ botas:'<path d="M22 6h14v24l14 6v8H22zM22 36h28M22 12h14"/>',
+ calcas:'<path d="M18 6h28l4 38H38l-6-24-6 24H14zM18 12h28"/>',
+ anel:'<path d="M22 32a10 10 0 1 0 20 0 10 10 0 1 0-20 0M27 20l5-12 5 12z"/>',
+ escudo:'<path d="M32 6l16 6v12q0 14-16 20-16-6-16-20V12zM32 14v22M24 22h16"/>',
+ mago:'<path d="M20 44L40 12M40 12l4-7 2 7 7 2-6 4zM14 18l2 4 4 2-4 2-2 4-2-4-4-2 4-2z"/>',
+ sniper:'<path d="M8 40l40-28M48 12l8-4-4 8zM20 16q16 4 22 22M20 16l22 22M12 44l-6-6"/>',
+ recife:'<path d="M10 42l6-20 6 20zM24 42l8-30 8 30zM42 42l5-16 5 16zM4 42h56M30 26l4 4M14 32l3 3"/>',
+ cidade:'<path d="M8 42V22h10v20M22 42V12h10v30M36 42V26h8v16M48 42V18h8v24M12 28h2M26 18h2M26 26h2M51 24h2M51 32h2"/>'+ONDA,
+ sinos:'<path d="M22 34q0-20 10-20t10 20zM18 34h28M32 14V8M30 38a2 2 0 1 0 4 0"/>'+ONDA,
+ sargaco:'<path d="M12 44q-6-12 0-20t0-16M26 44q6-10 0-18t2-14M40 44q-6-12 0-22t0-12M52 44q5-9 0-16t2-12"/>',
+ boca:'<path d="M6 12q26 14 52 0M6 40q26-14 52 0M12 15l3 8 4-6 4 8 4-7 5 8 5-8 4 7 4-8 4 6 3-8M14 37l4-6 5 5 5-6 4 6 4-6 5 6 5-5 4 6"/>',
+ pet_xp:'<path d="M22 18q0-10 10-10t10 10v14q0 10-10 10T22 32zM22 12l-3-6 7 3M42 12l3-6-7 3M24 20a3 3 0 1 0 6 0 3 3 0 1 0-6 0M34 20a3 3 0 1 0 6 0 3 3 0 1 0-6 0M32 24l-2 4h4zM26 35q6 4 12 0"/>',
+ pet_sal:'<path d="M20 28q0-8 12-8t12 8-12 8-12-8zM20 26l-8-6M12 20q-4-6 2-8M12 20q-6 0-6-6M44 26l8-6M52 20q4-6-2-8M52 20q6 0 6-6M22 34l-6 6M28 36l-3 6M36 36l3 6M42 34l6 6M28 22v-4M36 22v-4"/>',
+ pet_vida:'<path d="M14 32q0-16 18-16t18 16zM50 30q8-4 10 2-4 4-10 0M18 32v6h6v-6M40 32v6h6v-6M14 30l-6 3M24 18l4 14M40 18l-4 14M17 26h30"/>',
+ pet_dano:'<path d="M10 38q8-14 24-12 8-8 14-2 2 6-6 8-2 8-14 8zM10 38q-6 0-6-6M44 25v.5M30 14l22-8M52 6l5-2-2 5z"/>',
+ pet_roubo:'<path d="M6 38q10-20 20-8t20-10M46 20q8-6 10 2t-8 6q-6-2-2-8M50 24v2M14 33v.5M20 29v.5M26 31v.5"/>',
+ pet_duplo:'<path d="M6 20q8-10 14 0 6-10 14 0M30 36q8-10 14 0 6-10 14 0M20 20l-2 5M44 36l-2 5"/>',
+ pet_refl:'<path d="M12 38q0-18 20-18t20 18zM16 26l-5-8M22 22l-3-10M30 20l-1-11M38 21l3-10M44 24l6-8M49 30l8-4M20 34v.5M10 38h44"/>',
+ incubadora:'<path d="M32 8q-12 0-12 18a12 12 0 0 0 24 0q0-18-12-18zM14 40q18 8 36 0M10 36l6 6M54 36l-6 6M26 22l4 4 4-4 4 4"/>',
+ exped:'<path d="M8 30h48l-8 12H16zM32 30V6M32 8l16 18H32M32 12L20 26h12"/>'+ONDA,
+ loja:'<path d="M8 20l6-12h36l6 12zM8 20q4 6 8 0 4 6 8 0 4 6 8 0 4 6 8 0 4 6 8 0 4 6 8 0M12 24v18h40V24M26 42V30h12v12"/>'
+};
+const arte=(k,w)=>`<svg class="arte" viewBox="0 0 64 48" width="${w}" aria-hidden="true">${ARTE[k]}</svg>`;
+const ZONAS=[
+ {n:'Cais Afundado',a:'cais',d:'Tábuas podres e caranguejos que comem pregos.',nv:1,base:1,custo:2,f:1,boss:'Rei Caranguejo',ini:['Caranguejo-ferrugem','Gaivota de três olhos','Rato de porão']},
+ {n:'Salinas Mortas',a:'salinas',d:'Montes brancos até perder de vista. Algo se mexe na crosta.',nv:3,base:3,custo:3,f:1.3,boss:'Mãe da Salmoura',ini:['Cão de salina','Saqueador de marés','Larva de salmoura']},
+ {n:'Cemitério de Traineiras',a:'traineiras',d:'Cascos empilhados. Quem lá vive não gosta de visitas.',nv:6,base:6,custo:4,f:1.7,boss:'Capitão dos Cascos',ini:['Sucateiro mascarado','Polvo de cabos','Mergulhador afogado']},
+ {n:'Conserveira Alagada',a:'conserveira',d:'As máquinas ainda trabalham. Ninguém sabe para quem.',nv:10,base:10,custo:5,f:2.2,boss:'A Grande Prensa',ini:['Autómato da conserveira','Capataz de lata','Enguia de néon']},
+ {n:'Plataforma Negra',a:'plataforma',d:'Hic sunt dracones. Aço, gasóleo e a coisa que dorme por baixo.',nv:15,base:15,custo:6,f:2.8,boss:'Engenheiro Afogado',ini:['Guarda da plataforma','Medusa de crude','Cria do Leviatã']},
+ {n:'Recife de Vidro',a:'recife',d:'Cristais que cortam cascos. O que lá vive aprendeu a brilhar.',nv:20,base:20,custo:7,f:3.2,boss:'Hidra de Vidro',ini:['Moreia de vidro','Ouriço de lâminas','Fogo-fátuo do recife']},
+ {n:'Cidade Submersa',a:'cidade',d:'Ruas inteiras debaixo de água. As janelas ainda se acendem.',nv:28,base:28,custo:8,f:3.8,boss:'Regedor Submerso',ini:['Sentinela enferrujada','Sereia de arame','Sacristão afogado']},
+ {n:'Fossa dos Sinos',a:'sinos',d:'Lá no fundo tocam sinos. Ninguém os pôs lá.',nv:36,base:36,custo:9,f:4.5,boss:'O Sino Maior',ini:['Sineiro cego','Tubarão-sino','Coro dos afogados']},
+ {n:'Mar de Sargaço Negro',a:'sargaco',d:'A água não se mexe. As algas, sim.',nv:45,base:45,custo:10,f:5.3,boss:'Coração do Sargaço',ini:['Nó de sargaço','Barqueiro sem rosto','Lume das algas']},
+ {n:'Boca do Leviatã',a:'boca',d:'Fim da carta. Daqui para a frente, só dentes.',nv:55,base:55,custo:12,f:6.2,boss:'A Língua do Leviatã',ini:['Dente andante','Parasita real','Eco do Leviatã']}
+];
+const EDIF={
+ farol:{n:'Farol',d:n=>`Nenhuma construção passa do nível ${n}`,p:'A torre principal. Limita o nível de todas as outras construções'},
+ lanterna:{n:'Lanterna',d:n=>`+${4*n} de energia máxima · 1 a cada ${enSeg(n).toFixed(1).replace('.0','').replace('.',',')} s`,p:'Por nível: +4 de energia máxima e recarga 1,2 s mais rápida'},
+ destilaria:{n:'Destilaria',d:n=>`${2*n} de sal por minuto`,p:'Produz sal mesmo com o jogo fechado (até 8 h)'},
+ oficina:{n:'Oficina',d:n=>`+${5*n}% de dano`,p:'+5% de dano por nível'},
+ sucateira:{n:'Sucateira',d:n=>`${n} de sucata a cada 5 min`,p:'Recolhe sucata mesmo com o jogo fechado (até 8 h)'},
+ incubadora:{n:'Incubadora',d:n=>n?`Choca mascotes até à versão ${n}`:'Por construir',p:'Cada nível liberta uma versão mais forte das mascotes e pede mais 10 níveis teus'}
+};
+const RAR=['Comum','Incomum','Raro','Épico','Lendário','Mítico','Artefacto'], MULT=[1,1.4,1.9,2.6,3.4,4.4,5.8], RAR_NV=[1,10,20,30,40,60,80], NV_MAX=100;
+const NOMES={arma:['Arpão','Gancho de estiva','Faca de escalar','Remo ferrado','Croque'],capacete:['Sueste','Barrete de lã','Elmo de panela','Capuz de oleado','Capacete de mergulho'],armadura:['Oleado','Colete de cortiça','Casaco de rede','Peitoral de chapa','Escafandro'],luvas:['Luvas de estiva','Manoplas de rede','Luvas de couro','Mitenes de lona','Punhos de chapa'],calcas:['Calças de oleado','Jardineiras','Calças de lona','Perneiras de cortiça','Grevas de chapa'],botas:['Galochas','Botas de água','Socos de madeira','Botas ferradas','Botins de pesca'],anel:['Anel de latão','Aliança de sal','Anel de búzio','Argola de âncora','Sinete do faroleiro'],colar:['Búzio','Anzol da sorte','Bússola parada','Dente de tubarão','Vidro do mar']};
+const PESO={capacete:.6,armadura:1,luvas:.4,calcas:.6,botas:.4}, VIDA={capacete:1.5,armadura:4,calcas:1.5,colar:3};
+const SUF=['','reforçado','de mestre','do abismo','das marés','do Leviatã','da Luz Velha'];
+const SLOT={arma:'Arma',capacete:'Capacete',armadura:'Armadura',luvas:'Luvas',calcas:'Calças',botas:'Botas',anel:'Anel',colar:'Colar'};
+const ATR={for:['Força','Dano do Escudo · armadura física'],agi:['Agilidade','Dano do Sniper · esquiva'],int:['Inteligência','Dano do Mago · armadura mágica'],res:['Resistência','Vida'],sor:['Sorte','Crítico · ataque duplo · loot raro']};
+const MAGICOS=new Set(['Gaivota de três olhos','Larva de salmoura','Mergulhador afogado','Enguia de néon','Medusa de crude','Fogo-fátuo do recife','Sereia de arame','Coro dos afogados','Lume das algas','Eco do Leviatã','Mãe da Salmoura','Hidra de Vidro','O Sino Maior','Coração do Sargaço']);
+const ROT={atk:' dano',def:' armadura física',am:' armadura mágica',hp:' vida',pd:'% dano',pv:'% vida',bx:'% XP extra',bs:'% sal extra',crit:'% crítico',rv:'% roubo de vida',rf:'% refletir dano',for:' Força',agi:' Agilidade',int:' Inteligência',res:' Resistência',sor:' Sorte'};
+const CRESCE=new Set(['atk','def','am','hp','pd','pv','bx','bs']);
+const CLASSES={
+ escudo:{n:'Escudo do Farol',p:'Baluarte do Farol',m:'for',d:'Ataca com a Força. Cada ponto de Resistência dá o dobro da vida.',u:'Devolve ao adversário 20% do dano que sofre.',p2:'Muralha do Farol',u2:'Devolve 35% do dano que sofre e ganha +20% de vida.'},
+ mago:{n:'Mago do Farol',p:'Arquimago do Farol',m:'int',d:'Ataca com a Inteligência. Vida normal por ponto de Resistência.',u:'+20% de dano e recupera em vida 10% do dano que causa.',p2:'Oráculo do Farol',u2:'+40% de dano e recupera em vida 20% do dano que causa.'},
+ sniper:{n:'Sniper do Farol',p:'Olho do Farol',m:'agi',d:'Ataca com a Agilidade, que também dá esquiva. Vida normal por ponto de Resistência.',u:'Esquiva-se mais facilmente: o limite sobe de 25% para 30%.',p2:'Vento do Farol',u2:'Limite de esquiva a 35% e de ataque duplo a 30%.'}
+};
+const ESQ_MAX=25, ESQ_SNIPER=30, LOJA_MS=1800000;
+const PROVAS=[{n:'Prova do Farol',nv:20,en:8,boss:'Guardião da Luz Velha',L:22,k:3,t:'p',u:'u'},{n:'Prova do Abismo',nv:60,en:15,boss:'Leviatã',L:62,k:8,t:'p2',u:'u2'}];
+const proxProva=()=>PROVAS[+S.prom||0]||null;
+const titulo=()=>{const C=CLASSES[S.classe];return [C.n,C.p,C.p2][+S.prom||0]}, poder=()=>{const C=CLASSES[S.classe];return [C.d,C.u,C.u2][+S.prom||0]};
+const SIMULADOS=[['Zé da Barra',60],['Mariana Sargaço',95],['Tó Lapa',140],['Avó Ilídia',190],['Quim Enxada',260],['Bia Maré-Viva',340],['Capitão Nortada',450],['Rosa dos Ventos',600],['O Velho do Restelo',800]];
+
+let horas=8, rarSel=0, aberto=null, auto=null, autoMsg='', autoEspera=0, S, tab='explorar', confirmar=false, aviso='';
+let db=null, uid=null, reais=[], nuvem='local', aEscrever=false, pendente=false, ultPerfil='', tSinc=null;
+function novo(){const t=Date.now();return{nome:'Faroleiro',nv:1,xp:0,pts:0,attr:{for:3,int:3,agi:3,res:3,sor:3},classe:null,prom:0,loja:null,obra:null,exp:null,pets:{},pet:null,choco:null,zc:0,zw:0,lixo:null,hp:999,sal:30,suc:5,en:20,tE:t,tH:t,tS:t,tB:t,bil:5,inv:[],eq:{arma:null,capacete:null,armadura:null,luvas:null,calcas:null,botas:null,anel:null,colar:null},tU:t,ed:{farol:1,lanterna:0,destilaria:0,oficina:0,sucateira:0,incubadora:0},pontos:100,vit:0,id:1,t:0}}
+const R=(a,b)=>a+Math.random()*(b-a), RI=(a,b)=>Math.floor(R(a,b+1)), esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lim=(x,a,b)=>{x=Number(x);return isFinite(x)?Math.min(b,Math.max(a,x)):a};
+const base=(i,k)=>CRESCE.has(k)?Math.round(i[k]*(1+.08*(i.up||0))):i[k];   // cada melhoria da forja dá +8% aos valores base
+function eqSoma(k){let t=0;for(const s in S.eq){const i=S.eq[s];if(!i)continue;if(i[k])t+=base(i,k);if(i.b)for(const [bk,v] of i.b)if(bk===k)t+=v}return t}
+const A=k=>S.attr[k]+eqSoma(k);   // atributo total: treinado + bónus do equipamento
+function normalizar(x){x=Object.assign(novo(),x);if(x.attr.int==null)x.attr.int=3;if(!CLASSES[x.classe])x.classe=null;if(x.ed.enfermaria!=null){x.ed.sucateira=x.ed.sucateira||x.ed.enfermaria;delete x.ed.enfermaria}if(x.ed.sucateira==null)x.ed.sucateira=0;if(x.ed.farol==null)x.ed.farol=Math.max(1,x.ed.lanterna||0,x.ed.destilaria||0,x.ed.oficina||0,x.ed.sucateira||0);const am=i=>{if(i&&i.slot==='amuleto')i.slot='colar';return i};x.inv.forEach(am);if(x.loja&&x.loja.it)x.loja.it.forEach(am);if(x.eq.amuleto){x.eq.colar=am(x.eq.amuleto)}delete x.eq.amuleto;for(const k in SLOT)if(x.eq[k]===undefined)x.eq[k]=null;if(x.zc==null){x.zc=Math.max(0,ZONAS.filter(z=>z.nv<=x.nv).length-1);x.zw=0}if(x.ed.incubadora==null)x.ed.incubadora=0;if(!x.pets||typeof x.pets!=='object')x.pets={};const lp=i=>{if(!i)return;delete i.rv;delete i.rf;if(!i.b)return;const n=i.b.length;i.b=i.b.filter(e=>e[0]!=='rv'&&e[0]!=='rf');const livres=Object.keys(BONUS).filter(k=>!i.b.some(e=>e[0]===k));while(i.b.length<n&&livres.length){const k=livres.splice(RI(0,livres.length-1),1)[0];i.b.push([k,BONUS[k](i)])}};x.inv.forEach(lp);Object.values(x.eq).forEach(lp);if(x.loja&&x.loja.it)x.loja.it.forEach(lp);x.nv=Math.min(100,x.nv);x.prom=x.prom===true?1:Math.min(2,+x.prom||0);if(x.pts){x.sal+=x.pts*30;x.pts=0}return x}
+const grau=c=>S.classe===c?(+S.prom||0):0, prom=c=>grau(c)>=1;
+const maxHp=()=>Math.round((60+A('res')*(S.classe==='escudo'?24:12)+S.nv*8+eqSoma('hp'))*(grau('escudo')>=2?1.2:1)*(1+eqSoma('pv')/100)*(1+.04*petB('vida')));
+const atk=()=>Math.round((6+A(S.classe?CLASSES[S.classe].m:'for')*2+eqSoma('atk'))*(1+.05*S.ed.oficina)*(1+eqSoma('pd')/100)*(1+.03*petB('dano'))*[1,1.2,1.4][grau('mago')]);
+const tipo=()=>S.classe==='mago'?'m':'f';
+const armF=()=>Math.round(A('for')*.8+eqSoma('def'));
+const armM=()=>Math.round(A('int')*.8+eqSoma('am'));
+const duplo=()=>Math.min(grau('sniper')>=2?30:20,Math.round(A('sor')*.6))+2*petB('duplo');
+const roubo=()=>Math.min(30,[0,10,20][grau('mago')]+1.5*petB('roubo'));
+const refl=()=>Math.min(50,[0,20,35][grau('escudo')]+2*petB('refl'));
+const bXp=()=>eqSoma('bx')+5*petB('xp'), bSal=()=>eqSoma('bs')+5*petB('sal');
+const combate=()=>({max:maxHp(),dano:atk(),tipo:tipo(),af:armF(),am:armM(),crit:crit(),duplo:duplo(),esq:esq(),agi:A('agi'),refl:refl()/100,roubo:roubo()/100});
+const crit=()=>Math.min(25,Math.round(3+A('sor')*.8+eqSoma('crit')));
+const esq=()=>{const g=grau('sniper');return Math.min([ESQ_MAX,ESQ_SNIPER,35][g],Math.round(A('agi')*(g?1.5:1.2)))};
+const maxEn=()=>20+4*S.ed.lanterna+4*(S.nv-1);
+const enSeg=n=>Math.max(8,20-1.2*n), enMs=()=>enSeg(S.ed.lanterna)*1000;
+const custoAtr=k=>Math.round(15*Math.pow(1.12,S.attr[k]-3));
+const xpNec=()=>Math.round(280*Math.pow(S.nv,2.4));   // afinada para o nível acompanhar as zonas: cerca de 20 ao chegar à zona 6, 55 à zona 10
+const custo=n=>({sal:Math.round(40*Math.pow(1.7,n)),suc:Math.round(6*Math.pow(1.6,n))});
+const custoEd=k=>k==='farol'?{sal:Math.round(90*Math.pow(1.8,S.ed.farol)),suc:Math.round(14*Math.pow(1.7,S.ed.farol))}:custo(S.ed[k]);
+const podeSubir=k=>S.ed[k]<10&&(k==='farol'||S.ed[k]<S.ed.farol)&&(k!=='incubadora'||S.nv>=(S.ed[k]+1)*10);
+const tempoObra=k=>Math.round(60000*Math.pow(1.8,S.ed[k])*(k==='farol'?1.5:1));
+function fmtT(ms){const s=Math.max(0,Math.ceil(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?`${h} h ${m} min`:m?`${m} min ${s%60} s`:`${s} s`}
+
+function local(){try{localStorage.setItem(CHAVE,JSON.stringify(S))}catch(e){}}
+function guardar(){S.t=Date.now();local();if(db){clearTimeout(tSinc);tSinc=setTimeout(sincronizar,2500)}}
+function carregar(){try{const j=localStorage.getItem(CHAVE);if(j)return normalizar(JSON.parse(j))}catch(e){}return null}
+
+/* Conta e amigos: o progresso fica na conta de cada jogador; o perfil de combate é público para a arena. */
+const perfil=()=>Object.assign({nome:S.nome,nv:S.nv,pontos:S.pontos},combate());
+function limpar(id,d){d=d||{};return{id,real:1,n:String(d.nome||'Faroleiro').slice(0,16),nv:lim(d.nv,1,999),p:Math.round(lim(d.pontos,0,99999)),max:lim(d.max,50,99999),dano:lim(d.dano??d.atk,1,99999),tipo:d.tipo==='m'?'m':'f',af:lim(d.af??d.def,0,9999),am:lim(d.am??d.def,0,9999),crit:lim(d.crit,0,25),duplo:lim(d.duplo,0,50),esq:lim(d.esq,0,35),agi:lim(d.agi,0,999),refl:lim(d.refl,0,.5),roubo:lim(d.roubo,0,.3)}}
+async function sincronizar(){
+  if(!db)return; if(aEscrever){pendente=true;return} aEscrever=true;
+  try{
+    await db.doc('data/users/'+uid+'/save').set({t:S.t,s:JSON.parse(JSON.stringify(S))});
+    const p=perfil(), j=JSON.stringify(p);
+    if(j!==ultPerfil){await db.doc('faroleiros/'+uid).set(p);ultPerfil=j}
+    nuvem='ligado';
+  }catch(e){nuvem='erro';if(e&&e.code!=='unavailable'&&e.code!=='resource_exhausted')db=null}
+  aEscrever=false; if(pendente){pendente=false;sincronizar()}
+}
+async function ligar(){
+  if(!window.claude||!window.claude.use)return;
+  const [d,u]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);
+  if(!d||!u)return; const id=await u.id(); if(!id)return; uid=id;
+  try{
+    const s=await d.doc('data/users/'+uid+'/save').get(); const c=s.exists?s.data():null;
+    if(c&&c.s&&c.t>(S.t||0)){S=normalizar(JSON.parse(JSON.stringify(c.s)));local();aviso='Progresso carregado da tua conta.'}
+  }catch(e){return}
+  db=d; nuvem='ligado';
+  d.collection('faroleiros').limit(60).onSnapshot(q=>{
+    reais=q.docs.filter(x=>x.id!==uid).map(x=>limpar(x.id,x.data()));
+    if(tab==='arena'&&document.getElementById('luta').hidden)desenhar();
+  },()=>{});
+  sincronizar(); if(document.getElementById('luta').hidden)desenhar();
+}
+
+function recuperar(){
+  const t=Date.now(); let n;
+  if(S.obra&&t>=S.obra.fim){const k=S.obra.k;S.obra=null;if(EDIF[k]&&S.ed[k]<10){S.ed[k]++;aviso=`Obra concluída: ${EDIF[k].n} no nível ${S.ed[k]}.`;local()}}
+  if(S.exp&&t>=S.exp.fim){aviso=(aviso?aviso+' ':'')+fechaExp(S.exp.h);local()}
+  if(S.choco&&t>=S.choco.fim){const k=S.choco.k;S.choco=null;if(PETS[k]){S.pets[k]=Math.min(10,(S.pets[k]||0)+1);if(!S.pet)S.pet=k;aviso=(aviso?aviso+' ':'')+`${PETS[k][0]} saiu da incubadora na versão ${S.pets[k]}.`}}
+  if(S.en>=maxEn())S.tE=t; else{n=Math.floor((t-S.tE)/enMs());if(n>0){S.en=Math.min(maxEn(),S.en+n);S.tE+=n*enMs()}}
+  const mh=maxHp(); if(S.hp>mh)S.hp=mh;
+  n=Math.floor((t-S.tU)/SUC_MS); if(n>0){S.suc+=Math.min(n,96)*S.ed.sucateira;S.tU+=n*SUC_MS}
+  n=Math.floor((t-S.tS)/SAL_MS); if(n>0){S.sal+=Math.min(n,480)*2*S.ed.destilaria;S.tS+=n*SAL_MS}
+  if(S.bil>=5)S.tB=t; else{n=Math.floor((t-S.tB)/BIL_MS);if(n>0){S.bil=Math.min(5,S.bil+n);S.tB+=n*BIL_MS}}
+}
+function topo(){
+  const g=id=>document.getElementById(id), mh=maxHp(), me=maxEn(), xn=xpNec();
+  g('hSal').textContent=S.sal; g('hSuc').textContent=S.suc; g('hNv').textContent=S.nv;
+  let e=S.en+'/'+me; if(S.en<me)e+=' · '+Math.ceil((enMs()-(Date.now()-S.tE))/1000)+'s';
+  g('hEn').textContent=e; g('bEn').style.width=100*S.en/me+'%';
+  g('hXp').textContent=S.xp+'/'+xn; g('bXp').style.width=100*S.xp/xn+'%';
+}
+
+const RAR_P=[0,28,12,5,2,.8,.3], NBON=[1,1,1,1,2,2,3], BM=[1,1.5,2.2,3,4,5.2,7], JM=[1,1.3,1.7,2.2,2.8,3.5,4.5];
+const BONUS={};   // só atributos; roubo de vida e refletir dano vêm apenas da classe
+for(const k of ['for','agi','int','res','sor'])BONUS[k]=it=>Math.max(1,Math.round((1+it.nv*.08)*BM[it.r]));
+/** Raridade sorteada entre as que o nível do jogador já libertou. */
+function sorteiaRar(){const lk=Math.min(3,1+A('sor')*.02);for(let r=6;r>0;r--)if(S.nv>=RAR_NV[r]&&Math.random()*100<RAR_P[r]*lk)return r;return 0}
+function novosBonus(it){it.b=Object.keys(BONUS).sort(()=>Math.random()-.5).slice(0,NBON[it.r]).map(k=>[k,BONUS[k](it)])}
+function gerarItem(nv,fr){
+  const slot=Object.keys(SLOT)[RI(0,7)], r=fr??sorteiaRar(), m=MULT[r];
+  const it={id:S.id++,slot,r,nv,up:0,nome:NOMES[slot][RI(0,4)]+(SUF[r]?' '+SUF[r]:'')};
+  if(slot==='arma')it.atk=Math.round((3+nv*1.6)*m);
+  if(PESO[slot])it.def=Math.max(1,Math.round((1+nv*.45)*PESO[slot]*m));
+  if(slot==='anel'||slot==='colar'){
+    it.am=Math.max(1,Math.round((1+nv*.65)*m));
+    const j=['bx','bs','pd','pv'][RI(0,3)]; it[j]=Math.max(1,Math.round((j==='bx'||j==='bs'?4+nv*.15:2+nv*.06)*JM[r]));
+  }
+  if(VIDA[slot])it.hp=Math.round(nv*VIDA[slot]*m);
+  novosBonus(it);
+  it.val=Math.round((6+nv*5)*m); return it;
+}
+const nomeItem=i=>i.nome+(i.up?' +'+i.up:'');
+function descItem(i){const p=[];for(const k of ['atk','def','am','hp','pd','pv','bx','bs','crit'])if(i[k])p.push('+'+base(i,k)+ROT[k]);return p.join(' · ')}
+const descBonus=i=>i.b&&i.b.length?'<br>Bónus: '+i.b.map(([k,v])=>'+'+v+ROT[k]).join(' · '):'';
+const achar=id=>S.inv.find(x=>x.id==id)||Object.values(S.eq).find(x=>x&&x.id==id)||null;
+const custoUp=i=>({sal:Math.round(i.val*1.5*((i.up||0)+1)),suc:Math.ceil((2+i.nv/5)*((i.up||0)+1))});
+const custoTroca=i=>({sal:i.val*2,suc:Math.ceil(3+i.nv/4)});
+/** Chance de a forja resultar: desce a cada nível e sobe 10% por cada falha seguida no mesmo objeto. */
+const chanceUp=i=>Math.min(100,[100,95,90,80,70,60,50,40,30,20][i.up||0]+10*(i.fz||0));
+function melhorar(id){
+  const it=achar(id); if(!it||(it.up||0)>=10)return '';
+  const c=custoUp(it); if(S.sal<c.sal||S.suc<c.suc)return '';
+  S.sal-=c.sal;S.suc-=c.suc;
+  if(Math.random()*100<chanceUp(it)){it.up=(it.up||0)+1;it.fz=0;return `A forja resultou: ${nomeItem(it)}.`}
+  it.fz=(it.fz||0)+1; return `A forja falhou. ${nomeItem(it)} fica igual e a próxima tentativa tem ${chanceUp(it)}% de chance.`;
+}
+function trocarBonus(id){
+  const it=achar(id); if(!it)return '';
+  const c=custoTroca(it); if(S.sal<c.sal||S.suc<c.suc)return '';
+  S.sal-=c.sal;S.suc-=c.suc;novosBonus(it); return `Bónus novos em ${nomeItem(it)}.`;
+}
+
+function eu(){return Object.assign({n:S.nome,hp:maxHp()},combate())}
+function inimigo(nome,L,k){return{n:nome,max:Math.round((30+L*14)*k),dano:(5+L*2.6)*k,tipo:MAGICOS.has(nome.replace('Alfa ',''))?'m':'f',af:L*.7*k,am:L*.7*k,crit:8,duplo:0,esq:Math.min(25,4+L*.6),agi:L*.9,hp:0}}
+function simular(a,b){
+  b.hp=b.max; const reg=[]; let at=a.agi>=b.agi?a:b, df=at===a?b:a;
+  for(let r=0;r<80&&a.hp>0&&b.hp>0;r++){
+    const meu=at===a, golpes=Math.random()*100<(at.duplo||0)?2:1;
+    for(let g=0;g<golpes&&a.hp>0&&b.hp>0;g++){
+      const pre=g?'Ataque duplo! ':'';
+      if(Math.random()*100<df.esq){reg.push({c:meu?'t':'e',m:`${pre}${df.n} esquiva-se do golpe de ${at.n}.`,a:a.hp,b:b.hp});continue}
+      let d=Math.max(1,at.dano*R(.85,1.15)-(at.tipo==='m'?df.am:df.af)*.5);const c=Math.random()*100<at.crit;if(c)d*=2;d=Math.round(d);df.hp=Math.max(0,df.hp-d);
+      let m=`${pre}${at.n} acerta em ${df.n}: ${d} de dano ${at.tipo==='m'?'mágico':'físico'}${c?' (crítico!)':''}.`;
+      if(at.roubo&&at.hp>0){const h=Math.min(at.max-at.hp,Math.round(d*at.roubo));if(h>0){at.hp+=h;m+=` Absorve ${h} de vida.`}}
+      if(df.refl&&df.hp>0){const x=Math.min(at.hp-1,Math.round(d*df.refl));if(x>0){at.hp-=x;m+=` ${df.n} devolve ${x}.`}}
+      reg.push({c:meu?'t':'e',m,a:a.hp,b:b.hp});
+    }
+    [at,df]=[df,at];
+  }
+  return{reg,ganhou:b.hp<=0&&a.hp>0};
+}
+function ganhaXp(x,extra){if(S.nv>=NV_MAX){S.xp=0;return}S.xp+=x;while(S.nv<NV_MAX&&S.xp>=xpNec()){S.xp-=xpNec();S.nv++;S.en+=4;extra.push({c:'f',m:`Subiste para o nível ${S.nv}!`})}if(S.nv>=NV_MAX)S.xp=0}
+
+const PETS={xp:['Coruja-do-farol','% XP extra',5],sal:['Caranguejo salineiro','% sal extra',5],vida:['Tartaruga-de-pedra','% vida',4],dano:['Lontra-arpão','% dano',3],roubo:['Lampreia-da-maré','% roubo de vida',1.5],duplo:['Gaivota gémea','% ataque duplo',2],refl:['Ouriço-espelho','% refletir dano',2]};
+const petB=k=>S.pet===k?(S.pets[k]||0):0;   // versão da mascote que te acompanha, se for deste tipo
+const custoPet=t=>({sal:Math.round(300*Math.pow(2.2,t-1)),suc:Math.round(30*Math.pow(1.8,t-1)),ms:Math.round(300000*Math.pow(1.8,t-1))});
+function chocar(k){
+  if(!Object.hasOwn(PETS,k)||S.choco)return '';
+  const t=(S.pets[k]||0)+1; if(t>S.ed.incubadora)return '';
+  const c=custoPet(t); if(S.sal<c.sal||S.suc<c.suc)return '';
+  S.sal-=c.sal;S.suc-=c.suc;S.choco={k,fim:Date.now()+c.ms}; return `${PETS[k][0]} está na incubadora.`;
+}
+function levarPet(k){if(Object.hasOwn(PETS,k)&&S.pets[k]){S.pet=k;return `${PETS[k][0]} vai contigo.`}return ''}
+const BOSS_W=[200,700,1500,3100,6300,8300,11300,15300,20300,26300], bossN=z=>BOSS_W[Math.min(z,BOSS_W.length-1)], bossF=z=>z<3?4:5, EN_ZONA=4;   // vitórias pedidas antes do chefe de cada zona
+/** Luta contra o chefe da zona de fronteira. Devolve [a, b, linhas, desenho] ou null se ainda não pode. */
+function boss(){
+  const Z=ZONAS[S.zc]; if(!Z||S.exp||(S.zw||0)<bossN(S.zc)||S.en<EN_ZONA)return null;
+  if(S.en>=maxEn())S.tE=Date.now(); S.en-=EN_ZONA;
+  const L=Z.base+3, a=eu(), b=inimigo(Z.boss,L,Z.f*bossF(S.zc)), res=simular(a,b), fim=[];
+  if(res.ganhou){
+    const sal=Math.round((5+L*4)*Z.f*5*(1+bSal()/100)), xp=Math.round((12+L*6)*Z.f*5*(1+bXp()/100));
+    S.sal+=sal;S.zc++;S.zw=0;
+    fim.push({c:'f',m:`${Z.boss} caiu! +${xp} XP, +${sal} sal.`});
+    {const it=gerarItem(L),rc=recicla(it);if(rc)fim.push({c:'t',m:txtRec(it,rc)});else if(S.inv.length<20){S.inv.push(it);fim.push({c:'p',m:`Encontraste: ${it.nome} (${RAR[it.r]}).`})}}
+    fim.push({c:'p',m:ZONAS[S.zc]?`Caminho aberto: ${ZONAS[S.zc].n}.`:'Chegaste ao fim da carta.'});
+    ganhaXp(xp,fim);
+  }else{const p=Math.ceil(bossN(S.zc)*.05);S.zw=bossN(S.zc)-p;fim.push({c:'f',m:`${Z.boss} resistiu. Vence mais ${p} saídas nesta zona para o voltares a desafiar.`})}
+  return [a,b,res.reg.concat(fim),Z.a];
+}
+const valSuc=it=>Math.ceil((1+it.nv/2)*MULT[it.r]);
+/** Regra automática: se o objeto acabado de apanhar for de raridade abrangida, vira logo sal ou sucata. */
+function recicla(it){const m=S.lixo;if(!m||!(it.r<=m.ate))return null;if(m.modo==='desmontar'){const s=valSuc(it);S.suc+=s;return [0,s]}S.sal+=it.val;return [it.val,0]}
+const txtRec=(it,rc)=>`${it.nome} (${RAR[it.r]}) ${rc[0]?'vendido: +'+rc[0]+' sal':'desmontado: +'+rc[1]+' sucata'}.`;
+const parRar=i=>{const [modo,a]=String(i).split(':'),ate=Math.floor(Number(a));return (modo==='vender'||modo==='desmontar')&&ate>=-1&&ate<=6?{modo,ate}:null};
+function limparMochila(i){
+  const p=parRar(i); if(!p||p.ate<0)return ''; let n=0,g=0;
+  S.inv=S.inv.filter(it=>{if(it.r>p.ate||it.up>0)return true;n++;if(p.modo==='vender'){S.sal+=it.val;g+=it.val}else{const s=valSuc(it);S.suc+=s;g+=s}return false});
+  return n?`${n} ${n===1?'objeto':'objetos'} ${p.modo==='vender'?(n===1?'vendido':'vendidos'):(n===1?'desmontado':'desmontados')}: +${g} ${p.modo==='vender'?'sal':'sucata'}.`:'';
+}
+function regraLixo(i){const p=parRar(i);if(!p)return '';S.lixo=p.ate<0?null:p;return p.ate<0?'Limpeza automática desligada.':`A partir de agora ${p.modo==='vender'?'vendes':'desmontas'} sozinho o que apanhares até ${RAR[p.ate]}.`}
+/** Várias saídas seguidas na mesma zona, até acabar a energia ou o número pedido. Devolve um resumo em vez de cada luta. */
+function variasSaidas(z,n){
+  const Z=ZONAS[z]; n=Math.min(200,Math.floor(Number(n))||0);
+  if(!Z||S.exp||z>S.zc||n<1||S.en<EN_ZONA)return null;
+  let v=0,d=0,sal=0,xp=0,suc=0,cheia=0,rN=0,rSal=0,rSuc=0; const fim=[],itens=[];
+  while(n-->0&&S.en>=EN_ZONA){
+    if(S.en>=maxEn())S.tE=Date.now(); S.en-=EN_ZONA;
+    const elite=Math.random()<.1, L=Z.base+RI(0,2), res=simular(eu(),inimigo((elite?'Alfa ':'')+Z.ini[RI(0,2)],L,(elite?1.5:1)*Z.f));
+    if(!res.ganhou){d++;continue}
+    v++;S.vit++;if(z===S.zc)S.zw=Math.min(bossN(z),(S.zw||0)+1);
+    const s=Math.round((5+L*4)*(elite?2:1)*Z.f*R(.8,1.2)*(1+bSal()/100)), x=Math.round((12+L*6)*(elite?2:1)*Z.f*(1+bXp()/100)), sc=Math.random()<.5?RI(1,2+Math.floor(L/3)):0;
+    sal+=s;S.sal+=s;suc+=sc;S.suc+=sc;xp+=x;
+    if(elite||Math.random()<.35){const it=gerarItem(L),rc=recicla(it);if(rc){rN++;rSal+=rc[0];rSuc+=rc[1]}else if(S.inv.length<20){S.inv.push(it);itens.push(it)}else cheia++}
+    ganhaXp(x,fim);
+  }
+  const l=[{c:'f',m:`${v+d} ${v+d===1?'saída':'saídas'} em ${Z.n}: ${v} ${v===1?'vitória':'vitórias'}${d?` e ${d} ${d===1?'derrota':'derrotas'}`:''}.`},{c:'t',m:`+${xp} XP, +${sal} sal, +${suc} sucata.`}];
+  for(const it of itens)l.push({c:'p',m:`Encontraste: ${it.nome} (${RAR[it.r]}).`});
+  if(rN)l.push({c:'t',m:`${rN} ${rN===1?'objeto reciclado':'objetos reciclados'}: ${rSal?'+'+rSal+' sal':''}${rSuc?'+'+rSuc+' sucata':''}.`});
+  if(cheia)l.push({c:'e',m:`A mochila encheu: ${cheia} ${cheia===1?'objeto ficou':'objetos ficaram'} para trás.`});
+  return [{n:S.nome,max:1},{n:Z.n,max:1},l.concat(fim),Z.a];
+}
+const custoAtrN=(k,n)=>{let t=0;for(let j=0;j<n;j++)t+=Math.round(15*Math.pow(1.12,S.attr[k]-3+j));return t};
+/** Treina "atributo:quantos". Compra até esse número de pontos, parando quando o sal acaba. Devolve quantos comprou. */
+function treinar(i){
+  const [k,q]=String(i).split(':'); let n=Math.min(500,Math.max(1,Math.floor(Number(q))||1)), f=0;
+  if(!Object.hasOwn(ATR,k))return 0;
+  while(n-->0&&S.sal>=custoAtr(k)){S.sal-=custoAtr(k);S.attr[k]++;f++}
+  return f;
+}
+const EXP={sal:['sal',()=>60+S.nv*25],xp:['XP',()=>Math.max(40+S.nv*20,Math.round(xpNec()*.015))],suc:['sucata',()=>6+S.nv]}, HORA=3600000;
+const ganhoExp=(tp,h)=>Math.round(EXP[tp][1]()*h*(tp==='sal'?1+bSal()/100:tp==='xp'?1+bXp()/100:1));
+function fechaExp(h){
+  const e=S.exp; S.exp=null;
+  if(h<1)return 'Voltaste antes da primeira hora: a expedição não rendeu nada.';
+  const g=ganhoExp(e.tipo,h), ex=[];
+  if(e.tipo==='sal')S.sal+=g; else if(e.tipo==='suc')S.suc+=g; else ganhaXp(g,ex);
+  return `Expedição de ${h} h concluída: +${g} de ${EXP[e.tipo][0]}.`+ex.map(x=>' '+x.m).join('');
+}
+function partir(i){
+  const [tp,h]=String(i).split(':'), n=Math.floor(Number(h));
+  if(S.exp||!Object.hasOwn(EXP,tp)||!(n>=1&&n<=10))return '';
+  S.exp={tipo:tp,h:n,ini:Date.now(),fim:Date.now()+n*HORA};
+  return `O faroleiro partiu em expedição por ${n} h.`;
+}
+const voltar=()=>S.exp?fechaExp(Math.min(S.exp.h,Math.floor((Date.now()-S.exp.ini)/HORA))):'';
+function explorar(z){
+  if(S.exp)return;
+  const Z=ZONAS[z]; recuperar(); if(S.en<EN_ZONA||z>S.zc)return;
+  if(S.en>=maxEn())S.tE=Date.now(); S.en-=EN_ZONA;
+  const elite=Math.random()<.1, L=Z.base+RI(0,2), a=eu();
+  const b=inimigo((elite?'Alfa ':'')+Z.ini[RI(0,2)],L,(elite?1.5:1)*Z.f), res=simular(a,b), fim=[];
+  S.hp=Math.max(1,a.hp); S.tH=Date.now();
+  if(res.ganhou){
+    const sal=Math.round((5+L*4)*(elite?2:1)*Z.f*R(.8,1.2)*(1+bSal()/100)), xp=Math.round((12+L*6)*(elite?2:1)*Z.f*(1+bXp()/100)), suc=Math.random()<.5?RI(1,2+Math.floor(L/3)):0;
+    S.sal+=sal;S.suc+=suc;S.vit++;if(z===S.zc)S.zw=Math.min(bossN(z),(S.zw||0)+1);
+    fim.push({c:'f',m:`Vitória! +${xp} XP, +${sal} sal${suc?`, +${suc} sucata`:''}.`});
+    if(elite||Math.random()<.35){const it=gerarItem(L),rc=recicla(it);if(rc)fim.push({c:'t',m:txtRec(it,rc)});else if(S.inv.length<20){S.inv.push(it);fim.push({c:'p',m:`Encontraste: ${it.nome} (${RAR[it.r]}).`})}else fim.push({c:'e',m:'Havia um objeto, mas a mochila está cheia.'})}
+    ganhaXp(xp,fim);
+  }else fim.push({c:'f',m:'Derrota. Arrastas-te de volta ao farol.'});
+  guardar(); mostrarLuta(a,b,res.reg.concat(fim),Z.a);
+}
+function prova(){
+  recuperar(); const P=proxProva(); if(S.exp||!P||S.nv<P.nv||S.en<P.en)return;
+  if(S.en>=maxEn())S.tE=Date.now(); S.en-=P.en;
+  const a=eu(), b=inimigo(P.boss,P.L,P.k), res=simular(a,b), fim=[];
+  S.hp=Math.max(1,a.hp); S.tH=Date.now();
+  if(res.ganhou){S.prom=(+S.prom||0)+1;fim.push({c:'f',m:`Prova superada! És agora ${titulo()}.`},{c:'p',m:poder()})}
+  else fim.push({c:'f',m:`O ${P.boss} não cede. Volta mais forte.`});
+  guardar(); mostrarLuta(a,b,res.reg.concat(fim),S.classe);
+}
+function stock(forcar){
+  if(S.loja&&!forcar&&Date.now()-S.loja.t<LOJA_MS)return;
+  S.loja={t:Date.now(),it:[0,1,2,3,4,5].map(()=>{const i=gerarItem(S.nv+RI(0,2));i.preco=i.val*4;return i})}; local();
+}
+const custoRenovar=()=>20+S.nv*5;
+function vLoja(){
+  stock(); const min=Math.max(1,Math.ceil((LOJA_MS-(Date.now()-S.loja.t))/60000));
+  return `<h2>Loja do Cais</h2><p class="lenda">O mercador troca de mercadoria a cada meia hora. Para vender, usa a mochila no separador Faroleiro.</p><div class="lista">`+
+  (S.loja.it.length?S.loja.it.map(i=>`<div class="cartao">${arte(i.slot,40)}<div><h3 class="r${i.r}">${nomeItem(i)}</h3><p class="nota num">${SLOT[i.slot]} · ${RAR[i.r]} · Nv ${i.nv}</p><p class="nota num">${descItem(i)}${descBonus(i)}</p></div>
+  <button class="btn" data-act="comprar" data-i="${i.id}" ${S.sal>=i.preco&&S.inv.length<20?'':'disabled'}><span class="num">${i.preco}</span> sal</button></div>`).join(''):'<p class="lenda">Compraste tudo. O mercador agradece.</p>')+
+  `</div><p class="nota">Mercadoria nova em <span class="num">${min}</span> min.${S.inv.length>=20?' A mochila está cheia.':''}</p>
+  <div class="solta"><button class="btn sec peq" data-act="renovar" ${S.sal>=custoRenovar()?'':'disabled'}>Trocar já por <span class="num">${custoRenovar()}</span> sal</button></div>`;
+}
+function vClasse(){
+  return `<h2>Escolhe o teu ofício</h2><p class="lenda">Cada faroleiro defende a luz à sua maneira. A escolha fica até recomeçares do zero.</p><div class="lista">`+
+  Object.keys(CLASSES).map(k=>{const C=CLASSES[k];return `<div class="cartao">${arte(k,52)}<div><h3>${C.n}</h3><p class="nota">${C.d}</p><p class="lenda">No nível 20, ${C.p}: ${C.u}</p><p class="lenda">No nível 60, ${C.p2}: ${C.u2}</p></div><button class="btn" data-act="classe" data-i="${k}">Escolher</button></div>`}).join('')+`</div>`;
+}
+function alvo(k){
+  if(k[0]==='r')return reais.find(x=>x.id===k.slice(2));
+  const s=SIMULADOS[+k.slice(2)]; if(!s)return null;
+  const L=Math.max(1,Math.round(s[1]/45)), e=inimigo(s[0],L,1.25); return Object.assign(e,{p:s[1],nv:L});
+}
+function arena(k){
+  recuperar(); const o=alvo(k); if(S.exp||S.bil<1||!o)return;
+  if(S.bil>=5)S.tB=Date.now(); S.bil--;
+  const a=eu(); a.hp=a.max;
+  const b={n:'Fantasma de '+o.n,max:o.max,dano:o.dano,tipo:o.tipo,af:o.af,am:o.am,crit:o.crit,duplo:o.duplo||0,esq:o.esq,agi:o.agi,refl:o.refl||0,roubo:o.roubo||0,hp:0}, res=simular(a,b), fim=[];
+  if(res.ganhou){const g=Math.max(8,Math.min(60,Math.round(18+(o.p-S.pontos)/12))), sal=Math.round((20+o.nv*6)*(1+bSal()/100));S.pontos+=g;S.sal+=sal;fim.push({c:'f',m:`Vitória na arena! +${g} pontos, +${sal} sal.`})}
+  else{const p=Math.min(S.pontos,10);S.pontos-=p;fim.push({c:'f',m:`Derrota na arena. −${p} pontos.`})}
+  guardar(); mostrarLuta(a,b,res.reg.concat(fim),'serpente');
+}
+
+let fila=[],relogio=null,lA,lB;
+function linha(){
+  const l=fila.shift(), reg=document.getElementById('reg'); if(!l)return fimLuta();
+  const p=document.createElement('p');p.className=l.c;p.textContent=l.m;reg.appendChild(p);reg.scrollTop=reg.scrollHeight;
+  if(l.a!==undefined){document.getElementById('lB1').style.width=100*l.a/lA.max+'%';document.getElementById('lB2').style.width=100*l.b/lB.max+'%'}
+  if(!fila.length)fimLuta();
+}
+function fimLuta(){clearInterval(relogio);relogio=null;document.getElementById('lFim').textContent='Continuar'}
+function mostrarLuta(a,b,linhas,img){
+  lA=a;lB=b;fila=linhas.slice();
+  document.getElementById('lN1').textContent=a.n;document.getElementById('lN2').textContent=b.n;
+  document.getElementById('lB1').style.width='100%';document.getElementById('lB2').style.width='100%';
+  document.getElementById('lArte').innerHTML=arte(img,120);
+  document.getElementById('reg').innerHTML='';document.getElementById('lFim').textContent='Saltar';
+  document.getElementById('luta').hidden=false;
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches){while(fila.length)linha()}
+  else relogio=setInterval(linha,260);
+  document.getElementById('lFim').focus();
+}
+document.getElementById('lFim').onclick=()=>{
+  if(relogio||fila.length){clearInterval(relogio);relogio=null;while(fila.length)linha();return}
+  document.getElementById('luta').hidden=true;desenhar();
+};
+
+const resumo=l=>{const o=l.filter(x=>x.c==='p').length;return 'Última ronda: '+l.filter((x,j)=>j<2||x.c==='f'||x.c==='e').map(x=>x.m).join(' ')+(o?` ${o} ${o===1?'objeto novo':'objetos novos'}.`:'')};
+function vLimpa(){
+  const al=S.inv.filter(i=>i.r<=rarSel&&!(i.up>0)), gs=al.reduce((t,i)=>t+i.val,0), gc=al.reduce((t,i)=>t+valSuc(i),0), m=S.lixo;
+  return `<div class="forja"><b>Limpar por raridade</b><div class="solta"><label for="rarAte" class="nota">Tudo até</label><select id="rarAte">${RAR.map((n,r)=>`<option value="${r}"${r===rarSel?' selected':''}>${n}</option>`).join('')}</select>
+  <button class="btn peq" data-act="limpar" data-i="vender:${rarSel}" ${al.length?'':'disabled'}>Vender ${al.length} · +<span class="num">${gs}</span> sal</button><button class="btn peq" data-act="limpar" data-i="desmontar:${rarSel}" ${al.length?'':'disabled'}>Desmontar ${al.length} · +<span class="num">${gc}</span> sucata</button></div>
+  <p class="nota">${m&&m.ate>=0?`Automático ligado: ${m.modo==='desmontar'?'desmontas':'vendes'} sozinho o que apanhares até ${RAR[m.ate]}.`:'Automático desligado: tudo o que apanhas vai para a mochila.'} O equipado e os objetos já forjados nunca entram na limpeza.</p>
+  <div class="solta"><button class="btn sec peq" data-act="lixo" data-i="vender:${rarSel}">Vender ao apanhar</button><button class="btn sec peq" data-act="lixo" data-i="desmontar:${rarSel}">Desmontar ao apanhar</button>${m&&m.ate>=0?`<button class="btn sec peq" data-act="lixo" data-i="vender:-1">Desligar</button>`:''}</div></div>`;
+}
+function forja(i){
+  if(aberto!=i.id)return '';
+  const u=custoUp(i), t=custoTroca(i), up=i.up||0;
+  return `<div class="forja"><b>Forja: ${nomeItem(i)}</b><div class="solta"><button class="btn peq" data-act="melhorar" data-i="${i.id}" ${up<10&&S.sal>=u.sal&&S.suc>=u.suc?'':'disabled'}>${up>=10?'Já está em +10':`Melhorar para +${up+1} · ${chanceUp(i)}% de chance · <span class="num">${u.sal}</span> sal, <span class="num">${u.suc}</span> sucata`}</button><button class="btn peq" data-act="trocar" data-i="${i.id}" ${S.sal>=t.sal&&S.suc>=t.suc?'':'disabled'}>Trocar bónus · <span class="num">${t.sal}</span> sal, <span class="num">${t.suc}</span> sucata</button></div><p class="nota">Cada melhoria dá +8% aos valores base, até +10. Se a forja falhar, o objeto fica igual, pagas na mesma e a chance seguinte sobe 10%. Trocar sorteia bónus novos e os atuais perdem-se.</p></div>`;
+}
+const fmtN=x=>String(x).replace('.',',');
+function vPets(){
+  const n=S.ed.incubadora;
+  if(!n)return `<h2>Mascotes</h2><p class="lenda">Constrói a Incubadora, a partir do nível 10, para chocares a tua primeira mascote.</p>`;
+  return `<h2>Mascotes</h2><p class="lenda">Só uma mascote te acompanha de cada vez, e a Incubadora choca uma de cada vez. Neste momento chega à versão ${n}.</p><div class="lista">`+
+  Object.keys(PETS).map(k=>{const P=PETS[k],t=S.pets[k]||0,c=custoPet(t+1),aqui=S.choco&&S.choco.k===k,pode=!S.choco&&t<n&&S.sal>=c.sal&&S.suc>=c.suc;
+  return `<div class="cartao">${arte(t?'pet_'+k:'incubadora',44)}<div><h3>${P[0]} <span class="num nota">${t?'versão '+t:'por chocar'}</span>${S.pet===k?' <span class="selo">contigo</span>':''}</h3><p class="nota num">${t?'Agora: +'+fmtN(P[2]*t)+P[1]:'Dá'+P[1].replace('%','')}${t<10?' · versão '+(t+1)+': +'+fmtN(P[2]*(t+1))+P[1]:''}</p>${t<n&&!aqui?`<p class="nota num">Incubação: ${fmtT(c.ms)}</p>`:''}</div>
+  <div class="acoes">${t&&S.pet!==k?`<button class="btn sec peq" data-act="pet" data-i="${k}">Levar</button>`:''}<button class="btn peq" data-act="chocar" data-i="${k}" ${pode?'':'disabled'}>${aqui?`A chocar<br><span class="num">${fmtT(S.choco.fim-Date.now())}</span>`:t>=10?'Versão máxima':t>=n?'Sobe a Incubadora':`${t?'Evoluir':'Chocar'}<br><span class="num">${c.sal}</span> sal, <span class="num">${c.suc}</span> sucata`}</button></div></div>`}).join('')+`</div>`;
+}
+function vExped(){
+  if(S.exp){const e=S.exp;return `<div class="cartao">${arte('exped',56)}<div><h3>Em expedição</h3><p class="lenda">À procura de ${EXP[e.tipo][0]} durante ${e.h} h. Até voltar, não há saídas nem arena.</p><p class="nota num">Regressa em ${fmtT(e.fim-Date.now())}. Se voltar antes, só contam as horas completas.</p></div><button class="btn sec" data-act="voltar">Regressar já</button></div>`}
+  return `<div class="cartao">${arte('exped',56)}<div><h3>Expedição longa</h3><p class="lenda">Manda o faroleiro para longe enquanto dormes. Não gasta energia, mas até ele voltar não há saídas nem arena.</p><div class="solta"><button class="btn sec peq" data-act="hmenos" aria-label="Menos uma hora">−</button><b class="num">${horas} h</b><button class="btn sec peq" data-act="hmais" aria-label="Mais uma hora">+</button></div></div>
+  <div class="acoes">${Object.keys(EXP).map(k=>`<button class="btn peq" data-act="partir" data-i="${k}:${horas}">+${ganhoExp(k,horas)} ${EXP[k][0]}</button>`).join('')}</div></div>`;
+}
+function vExplorar(){
+  return `<h2>Carta da Costa Alagada</h2><p class="lenda">Cada saída gasta ${EN_ZONA} de energia. Cada zona pede um número de vitórias para desafiares o chefe; vencê-lo abre a zona seguinte. A luta resolve-se sozinha: o que conta é a preparação.</p>${auto!=null&&ZONAS[auto]?`<p class="nota" style="color:var(--musgo)">Automático ligado em ${ZONAS[auto].n}: explora sozinho sempre que houver energia, enquanto o jogo estiver aberto. ${esc(autoMsg)}</p>`:''}<div class="lista">`+vExped()+
+  ZONAS.map((Z,i)=>{const tr=i>S.zc,fr=i===S.zc,w=S.zw||0,pronto=fr&&w>=bossN(i);return `<div class="cartao${tr?' trancado':''}">${arte(Z.a,56)}<div><h3>${Z.n}</h3><p class="lenda">${Z.d}</p><p class="nota num">Inimigos nv ${Z.base}–${Z.base+2} · força ×${String(Z.f).replace('.',',')} </p>${fr?`<p class="nota num">${pronto?'O chefe espera: '+Z.boss:'Chefe: '+Z.boss+' · '+w+'/'+bossN(i)+' vitórias'}</p>`:i<S.zc?`<p class="nota">Chefe vencido</p>`:''}</div>
+  <div class="acoes"><button class="btn" data-act="exp" data-i="${i}" ${tr||S.exp||S.en<EN_ZONA?'disabled':''}>${tr?'Trancada':'Explorar'}</button>${tr?'':`<button class="btn sec peq" data-act="auto" data-i="${i}">${auto===i?'Parar':'Auto'}</button><button class="btn sec peq" data-act="expn" data-i="${i}:200" ${S.exp||S.en<EN_ZONA?'disabled':''}>Tudo</button>`}${pronto?`<button class="btn" data-act="boss" ${S.exp||S.en<EN_ZONA?'disabled':''}>Chefe</button>`:''}</div></div>`}).join('')+
+  (!proxProva()?'':(P=>`<div class="cartao${S.nv<P.nv?' trancado':''}">${arte(S.classe,56)}<div><h3>${P.n}</h3><p class="lenda">Vence o ${P.boss} e tornas-te ${CLASSES[S.classe][P.t]}.</p><p class="nota">${CLASSES[S.classe][P.u]}</p><p class="nota num">Inimigo nv ${P.L} · ${P.en} energia</p></div>
+  <button class="btn" data-act="prova" ${S.exp||S.nv<P.nv||S.en<P.en?'disabled':''}>${S.nv<P.nv?'Nível '+P.nv:'Enfrentar'}</button></div>`)(proxProva()))+
+  `</div><p class="nota">Saídas ganhas: <span class="num">${S.vit}</span>. Uma em cada dez traz um Alfa: mais forte, larga sempre um objeto.</p>`;
+}
+function vHeroi(){
+  return `<h2>${esc(S.nome)}, nível ${S.nv}</h2><p class="lenda">${titulo()}. ${poder()}</p>
+  <h2>Atributos totais</h2><div class="stats"><span>Dano ${tipo()==='m'?'mágico':'físico'} <b class="num">${atk()}</b></span><span>Armadura física <b class="num">${armF()}</b></span><span>Armadura mágica <b class="num">${armM()}</b></span><span>Vida <b class="num">${maxHp()}</b></span><span>Esquiva <b class="num">${esq()}%</b></span><span>Crítico (dano ×2) <b class="num">${crit()}%</b></span><span>Ataque duplo <b class="num">${duplo()}%</b></span><span>Roubo de vida <b class="num">${roubo()}%</b></span><span>Refletir dano <b class="num">${refl()}%</b></span><span>XP extra <b class="num">${bXp()}%</b></span><span>Sal extra <b class="num">${bSal()}%</b></span></div><h2>Treino</h2>
+  <p class="nota">Treina os atributos com sal. Cada ponto custa mais do que o anterior. Mantém um botão premido para continuar a subir até o largares ou o sal acabar.</p><div class="attrs treino">`+
+  Object.keys(ATR).map(k=>`<div class="attr"><span>${ATR[k][0]} <b class="num">${S.attr[k]}${eqSoma(k)?' +'+eqSoma(k):''}</b><small>${ATR[k][1]}</small></span><div class="solta">${[1,10].map(n=>`<button class="btn peq" data-act="attr" data-i="${k}:${n}" aria-label="Subir ${ATR[k][0]} ${n} ${n>1?'pontos':'ponto'}" ${S.sal>=custoAtr(k)?'':'disabled'}>+${n} · <span class="num">${custoAtrN(k,n)}</span> sal</button>`).join('')}</div></div>`).join('')+`</div>
+  <h2>Equipado</h2><div class="attrs equip">`+
+  Object.keys(SLOT).map(s=>{const i=S.eq[s];return `<div class="attr"><span><small>${SLOT[s]}</small>${i?`<b class="r${i.r}">${nomeItem(i)}</b><small class="num">Nv ${i.nv} · ${descItem(i)}${descBonus(i)}</small>`:'Vazio'}</span>${i?`<button class="btn sec peq" data-act="tirar" data-i="${s}">Tirar</button><button class="btn sec peq" data-act="forja" data-i="${i.id}">Forja</button>`:''}</div>${i?forja(i):''}`}).join('')+
+  `</div><h2>Mochila <span class="num nota">${S.inv.length}/20</span></h2>`+vLimpa()+`<div class="lista">`+
+  (S.inv.length?S.inv.map(i=>`<div class="cartao"><div><h3 class="r${i.r}">${nomeItem(i)}</h3><p class="nota num">${SLOT[i.slot]} · ${RAR[i.r]} · Nv ${i.nv}</p><p class="nota num">${descItem(i)}${descBonus(i)}</p></div>
+  <div class="acoes"><button class="btn peq" data-act="equipar" data-i="${i.id}">Equipar</button><button class="btn sec peq" data-act="vender" data-i="${i.id}">Vender ${i.val}</button><button class="btn sec peq" data-act="desmontar" data-i="${i.id}">Desmontar</button><button class="btn sec peq" data-act="forja" data-i="${i.id}">Forja</button></div></div>${forja(i)}`).join(''):'<p class="lenda">Vazia. Os inimigos largam objetos de vez em quando.</p>')+
+  `</div>`;
+}
+const CODIGOS={
+ SAL1000:['+1000 de sal',()=>{S.sal+=1000}],
+ SUCATA500:['+500 de sucata',()=>{S.suc+=500}],
+ ENERGIA:['Energia cheia',()=>{S.en=maxEn()}],
+ BILHETES:['Bilhetes da arena cheios',()=>{S.bil=5}],
+ NIVEL5:['+5 níveis',()=>{S.nv=Math.min(NV_MAX,S.nv+5);S.xp=0}],
+ OBRAFEITA:['A obra, a expedição e a incubação terminam já',()=>{if(S.obra)S.obra.fim=0;if(S.exp)S.exp.fim=0;if(S.choco)S.choco.fim=0}],
+ EPICO:['Um objeto épico do teu nível',()=>{if(S.inv.length<20)S.inv.push(gerarItem(S.nv,3))}]
+};
+function vOpcoes(){
+  return `<h2>Opções</h2><h3 class="sub">Nome do faroleiro</h3><div class="solta"><input type="text" id="nome" maxlength="16" value="${esc(S.nome)}" aria-label="Nome do faroleiro"><button class="btn sec peq" data-act="nome">Mudar</button></div>
+  <h3 class="sub">Código de bónus</h3><div class="solta"><input type="text" id="codigo" maxlength="20" autocomplete="off" autocapitalize="characters" aria-label="Código de bónus" placeholder="Escreve o código"><button class="btn peq" data-act="codigo">Usar</button></div>
+  <p class="nota">Códigos de teste, que se podem repetir:</p><table>`+Object.keys(CODIGOS).map(k=>`<tr><td class="num">${k}</td><td>${CODIGOS[k][0]}</td></tr>`).join('')+`</table>
+  <h3 class="sub">Progresso</h3><p class="nota">${nuvem==='ligado'?'Guardado na tua conta: continua noutro dispositivo.':nuvem==='erro'?'Não foi possível guardar na conta. O progresso continua neste dispositivo.':'Guardado só neste dispositivo.'}</p>
+  <div class="solta"><button class="btn sec peq" data-act="reset">${confirmar?'Confirmar: apagar tudo':'Recomeçar do zero'}</button></div>`;
+}
+function vFarol(){
+  return `<h2>O teu farol</h2><p class="lenda">Melhora as construções com sal e sucata. Nenhuma pode passar do nível do Farol, e só há mãos para uma obra de cada vez.</p><div class="lista">`+
+  Object.keys(EDIF).map(k=>{const n=S.ed[k],E=EDIF[k],c=custoEd(k),max=n>=10,aqui=S.obra&&S.obra.k===k,preso=!max&&!podeSubir(k),pode=!max&&!preso&&!S.obra&&S.sal>=c.sal&&S.suc>=c.suc;
+  return `<div class="cartao">${arte(k,48)}<div><h3>${E.n} <span class="num nota">nv ${n}${aqui?' → '+(n+1):''}</span></h3><p class="nota">${E.d(n)}</p><p class="lenda">${E.p}</p>${max||aqui?'':`<p class="nota num">Obra: ${fmtT(tempoObra(k))}</p>`}</div>
+  <button class="btn" data-act="obra" data-i="${k}" ${pode?'':'disabled'}>${max?'Máximo':aqui?`Em obra<br><span class="num">${fmtT(S.obra.fim-Date.now())}</span>`:preso?(k==='incubadora'&&S.nv<(n+1)*10?'Nível '+(n+1)*10:'Sobe o Farol'):`<span class="num">${c.sal}</span> sal<br><span class="num">${c.suc}</span> sucata`}</button></div>`}).join('')+`</div>`+vPets();
+}
+function vArena(){
+  const sims=SIMULADOS.map((r,i)=>({k:'s:'+i,n:r[0],p:r[1],nv:Math.max(1,Math.round(r[1]/45))}));
+  const perto=l=>l.slice().sort((a,b)=>Math.abs(a.p-S.pontos)-Math.abs(b.p-S.pontos));
+  const alvos=perto(reais.map(r=>Object.assign({k:'r:'+r.id},r))).slice(0,4).concat(perto(sims).slice(0,reais.length?2:3)).sort((a,b)=>a.p-b.p);
+  const todos=reais.concat(sims,[{n:S.nome,p:S.pontos,eu:1}]).sort((a,b)=>b.p-a.p);
+  const esp=S.bil<5?` · próximo em ${Math.ceil((BIL_MS-(Date.now()-S.tB))/60000)} min`:'';
+  const estado=nuvem==='ligado'?(reais.length?`Há ${reais.length} ${reais.length>1?'amigos':'amigo'} na arena.`:'Ainda nenhum amigo abriu o jogo. Partilha a página com eles e aparecem aqui.'):'Sem ligação à conta: só há rivais simulados.';
+  return `<h2>Arena dos Fantasmas</h2><p class="lenda">Lutas contra a cópia do faroleiro de um amigo, por isso ele não precisa de estar ligado.</p>
+  <p class="nota">${estado}</p><p class="nota">Bilhetes: <b class="num">${S.bil}/5</b>${esp}</p><div class="lista">`+
+  alvos.map(a=>`<div class="cartao">${arte('serpente',44)}<div><h3>${esc(a.n)} <span class="selo${a.real?'':' sim'}">${a.real?'amigo':'simulado'}</span></h3><p class="nota num">${a.p} pontos · nv ${a.nv}</p></div><button class="btn" data-act="arena" data-i="${esc(a.k)}" ${S.bil&&!S.exp?'':'disabled'}>Desafiar</button></div>`).join('')+
+  `</div><h2>Classificação</h2><table><tr><th>#</th><th>Faroleiro</th><th>Pontos</th></tr>`+
+  todos.map((t,i)=>`<tr${t.eu?' class="eu"':''}><td class="num">${i+1}</td><td>${esc(t.n)}${t.eu?' (tu)':t.real?' <span class="selo">amigo</span>':''}</td><td class="num">${t.p}</td></tr>`).join('')+`</table>`;
+}
+function desenhar(){
+  recuperar();topo();
+  document.getElementById('ecra').innerHTML=(aviso?`<p class="nota" style="color:var(--lacre)">${aviso}</p>`:'')+(S.classe?{explorar:vExplorar,heroi:vHeroi,loja:vLoja,farol:vFarol,arena:vArena,opcoes:vOpcoes}[tab]:vClasse)();
+  aviso='';
+  document.querySelectorAll('#nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===tab));
+}
+document.getElementById('nav').onclick=e=>{const b=e.target.closest('button');if(!b)return;tab=b.dataset.tab;confirmar=false;desenhar();document.getElementById('ecra').scrollTop=0};
+document.getElementById('ecra').onclick=e=>{
+  const b=e.target.closest('[data-act]');if(!b||b.disabled)return;const a=b.dataset.act,i=b.dataset.i;
+  if(ignorar)return;
+  if(a!=='reset')confirmar=false;
+  if(a==='exp')return explorar(+i);
+  if(a==='prova')return prova();
+  if(a==='expn'){recuperar();const [z,n]=String(i).split(':'),r=variasSaidas(Number(z),n);if(r){guardar();mostrarLuta(...r)}return}
+  if(a==='boss'){recuperar();const r=boss();if(r){guardar();mostrarLuta(...r)}return}
+  if(a==='auto'){auto=auto===+i?null:+i;autoMsg='';autoEspera=0;return desenhar()}
+  if(a==='forja'){aberto=aberto==i?null:i;return desenhar()}
+  if(a==='hmais'||a==='hmenos'){horas=Math.min(10,Math.max(1,horas+(a==='hmais'?1:-1)));return desenhar()}
+  if(a==='partir'){recuperar();aviso=partir(i)}
+  if(a==='voltar'){recuperar();aviso=voltar()}
+  if(a==='classe'&&CLASSES[i]&&!S.classe){S.classe=i;S.hp=maxHp();aviso=`És agora ${CLASSES[i].n}.`}
+  if(a==='comprar'){const k=S.loja.it.findIndex(x=>x.id==i),it=S.loja.it[k];if(it&&S.sal>=it.preco&&S.inv.length<20){S.sal-=it.preco;S.loja.it.splice(k,1);delete it.preco;S.inv.push(it);aviso=`Compraste ${it.nome}.`}}
+  if(a==='renovar'&&S.sal>=custoRenovar()){S.sal-=custoRenovar();stock(true)}
+  if(a==='arena')return arena(i);
+  if(a==='chocar'){recuperar();aviso=chocar(i)}
+  if(a==='pet')aviso=levarPet(i);
+  if(a==='limpar')aviso=limparMochila(i);
+  if(a==='lixo')aviso=regraLixo(i);
+  if(a==='attr')treinar(i);
+  if(a==='melhorar')aviso=melhorar(i);
+  if(a==='trocar')aviso=trocarBonus(i);
+  if(a==='equipar'){const k=S.inv.findIndex(x=>x.id==i);if(k>=0){const it=S.inv.splice(k,1)[0];if(S.eq[it.slot])S.inv.push(S.eq[it.slot]);S.eq[it.slot]=it}}
+  if(a==='tirar'&&S.eq[i]){if(S.inv.length<20){S.inv.push(S.eq[i]);S.eq[i]=null}else aviso='A mochila está cheia. Vende ou desmonta um objeto primeiro.'}
+  if(a==='vender'||a==='desmontar'){const k=S.inv.findIndex(x=>x.id==i);if(k>=0){const it=S.inv.splice(k,1)[0];if(a==='vender'){S.sal+=it.val;aviso=`Vendido por ${it.val} sal.`}else{const s=Math.ceil((1+it.nv/2)*MULT[it.r]);S.suc+=s;aviso=`Desmontado: +${s} sucata.`}}}
+  if(a==='obra'&&EDIF[i]){recuperar();const c=custoEd(i);if(!S.obra&&S.sal>=c.sal&&S.suc>=c.suc&&podeSubir(i)){S.sal-=c.sal;S.suc-=c.suc;S.obra={k:i,fim:Date.now()+tempoObra(i)};aviso=`Obra iniciada: ${EDIF[i].n}.`}}
+  if(a==='nome'){const v=document.getElementById('nome').value.trim();if(v)S.nome=v.slice(0,16)}
+  if(a==='codigo'){const c=document.getElementById('codigo').value.trim().toUpperCase();if(Object.hasOwn(CODIGOS,c)){CODIGOS[c][1]();recuperar();aviso=`Código aceite: ${CODIGOS[c][0]}.`}else aviso='Esse código não existe.'}
+  if(a==='reset'){if(confirmar){S=novo();S.hp=maxHp();confirmar=false;tab='explorar'}else{confirmar=true;desenhar();return}}
+  guardar();desenhar();
+};
+
+document.getElementById('ecra').addEventListener('change',e=>{if(e.target.id==='rarAte'){rarSel=+e.target.value;desenhar()}});
+/* Manter premido: repete o treino até largar ou acabar o sal. */
+let seg=null, ignorar=false;
+function largar(){if(seg){clearTimeout(seg.t);clearInterval(seg.r);seg=null}}
+document.getElementById('ecra').addEventListener('pointerdown',e=>{
+  const b=e.target.closest('[data-act="attr"]'); if(!b||b.disabled)return; largar();
+  const i=b.dataset.i, s=seg={n:0};
+  s.t=setTimeout(()=>{s.r=setInterval(()=>{if(seg!==s)return;if(!treinar(i))return largar();s.n++;guardar();desenhar()},110)},400);
+});
+for(const ev of ['pointerup','pointercancel'])document.addEventListener(ev,()=>{if(seg&&seg.n){ignorar=true;setTimeout(()=>ignorar=false,60)}largar()});
+window.addEventListener('blur',largar);
+document.getElementById('ecra').addEventListener('contextmenu',e=>{if(seg)e.preventDefault()});
+
+function arrancar(d){
+  S=(d&&d.S&&normalizar(d.S))||carregar()||novo(); if(S.hp>maxHp())S.hp=maxHp();
+  desenhar();
+  setInterval(()=>{const antes=S.en,obra=!!(S.obra||S.choco),ex=!!S.exp;recuperar();topo();if(auto!=null&&document.getElementById('luta').hidden&&!S.exp&&S.en>=EN_ZONA){const r=variasSaidas(auto,200);if(r){autoMsg=resumo(r[2]);guardar();topo();if(tab==='explorar')desenhar()}else auto=null}if(document.getElementById('luta').hidden&&(S.en!==antes&&tab==='explorar'||obra&&(tab==='farol'||!(S.obra||S.choco))||ex&&(tab==='explorar'||!S.exp)))desenhar()},1000);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)local()});
+  ligar().catch(()=>{});
+}
+window.claude?.hot?.snapshot?.(()=>({S}));
+window.claude?.hot?.ready?window.claude.hot.ready(arrancar):arrancar(window.claude?.hot?.data??{});
+</script>
+
+</body>
+</html>
